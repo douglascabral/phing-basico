@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Arquivo de autoload de classes
+ * 
+ * Referência:
+ * http://jes.st/2011/phpunit-bootstrap-and-autoloading-classes/
+ */
+
 class AutoLoader {
  
     static private $classNames = array();

@@ -12,7 +12,6 @@
 	</target>
 	
 	<target name="build" depends="prepare">
-		<echo>Ok</echo>
 	</target>
 	
 </project>
