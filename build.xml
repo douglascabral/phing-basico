@@ -2,7 +2,8 @@
 <project name="Integração Continua" default="build" basedir="." description="This is an example buildfile for Phing.">
 	
 	<target name="prepare">
-		<phpunit haltonfailure="true" printsummary="true" bootstrap="tests/bootstrap.php">
+		<phpunit codecoverage="true" haltonfailure="true" printsummary="true" bootstrap="tests/bootstrap.php">
+			<formatter type="clover" usefile="false"/>
       		<batchtest>
         		<fileset dir="tests">
           			<include name="*Test.php"/>
