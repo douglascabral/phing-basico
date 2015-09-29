@@ -8,10 +8,5 @@
             "name": "Douglas Cabral",
             "email": "douglas.cabral@fiap.com.br"
         }
-    ],
-	"autoload" : {
-		"psr-4": {
-			"Classe\\" : "src/"	
-		}
-	}
+    ]
 }
