@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project name="Integração Continua" default="build" basedir="." description="This is an example buildfile for Phing.">
+	
+	<target name="prepare">
+		<phpunit haltonfailure="true" printsummary="true" bootstrap="tests/bootstrap.php">
+      		<batchtest>
+        		<fileset dir="tests">
+          			<include name="*Test.php"/>
+        		</fileset>
+      		</batchtest>
+    	</phpunit>
+	</target>
+	
+	<target name="build" depends="prepare">
+		<echo>Ok</echo>
+	</target>
+	
+</project>
