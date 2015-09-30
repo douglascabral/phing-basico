@@ -1,8 +1,14 @@
 {
     "name": "dougscabral/integracao-continua",
-    "require": {
-        "dougscabral/kalendorius": "^1.4"
-    },
+	"require-dev" : {
+		"phpunit/phpunit": "4.6.*",
+		"phploc/phploc": "*",
+		"phpmd/phpmd" : "@stable",
+		"sebastian/phpcpd": "*",
+		"phing/phing": "2.*",
+		"phpdocumentor/phpdocumentor": "2.*",
+		"squizlabs/php_codesniffer": "2.*"
+	},
     "authors": [
         {
             "name": "Douglas Cabral",

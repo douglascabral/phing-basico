@@ -1,18 +1,116 @@
-<?xml version="1.0"?>
-<project name="Integração Continua" default="build" basedir="." description="This is an example buildfile for Phing.">
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Integracao Continua" default="build" basedir="." description="This is an example buildfile for Phing.">
 	
-	<target name="prepare">
-		<phpunit codecoverage="true" haltonfailure="true" printsummary="true" bootstrap="tests/bootstrap.php">
-			<formatter type="clover" usefile="false"/>
+	<target name="clean">
+		<delete dir="${project.basedir}/build/api"/>
+		<delete dir="${project.basedir}/build/code-browser"/>
+		<delete dir="${project.basedir}/build/coverage"/>
+		<delete dir="${project.basedir}/build/logs"/>
+		<delete dir="${project.basedir}/build/pdepend"/>
+		<delete dir="${project.basedir}/build/phpdox"/>
+	</target>
+		
+	<target name="prepare" depends="clean">
+		<mkdir dir="${project.basedir}/build/api"/>
+		<mkdir dir="${project.basedir}/build/code-browser"/>
+		<mkdir dir="${project.basedir}/build/coverage"/>
+		<mkdir dir="${project.basedir}/build/logs"/>
+		<mkdir dir="${project.basedir}/build/pdepend"/>
+		<mkdir dir="${project.basedir}/build/phpdox"/>
+	</target>	
+	
+	<target name="lint" description="Perform syntax check of sourcecode files">
+  		<apply executable="php" checkreturn="1">
+   			<arg value="-l" />
+   			<fileset dir="${project.basedir}/src">
+    			<include name="**/*.php" />
+   			</fileset>
+
+   			<fileset dir="${project.basedir}/tests">
+    			<include name="**/*.php" />
+	  		</fileset>
+  		</apply>
+ 	</target>
+	
+	<target name="phploc" description="Measure project size using PHPLOC">
+  		<exec executable="${project.basedir}/vendor/bin/phploc" logoutput="true">
+   			<arg value="--log-xml" />
+   			<arg value="${project.basedir}/build/logs/phploc.xml" />
+   			<arg path="${project.basedir}/src" />
+  		</exec>
+ 	</target>
+	
+	<target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
+  		<exec executable="${project.basedir}/vendor/bin/phpcs" logoutput="true">
+   			<arg value="--standard=${project.basedir}/phpcs.xml" />
+   			<arg path="${project.basedir}/src" />
+  		</exec>
+ 	</target>
+	
+	<target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
+  		<exec executable="${project.basedir}/vendor/bin/phpcs">
+   			<arg value="--report=checkstyle" />
+   			<arg value="--report-file=${project.basedir}/build/logs/checkstyle.xml" />
+   			<arg value="--standard=${project.basedir}/phpcs.xml" />
+   			<arg path="${project.basedir}/src" />
+  		</exec>
+ 	</target>
+
+	<target name="phpcodesniffer">
+		<exec executable="${project.basedir}/vendor/bin/phpcs" logoutput="true">
+			<arg value="--standard=Zend" />
+            <arg value="--report-file=${project.basedir}/build/logs/codesniffer.txt" />
+			<arg value="--report=full" />
+			<arg path="${project.basedir}/src" />
+		</exec>
+	</target>
+    
+    <target name="phpcpd" description="Find duplicate code using PHPCPD">
+        <exec executable="${project.basedir}/vendor/bin/phpcpd" logoutput="true">
+            <arg value="--log-pmd" />
+            <arg value="${project.basedir}/build/logs/pmd-cpd.xml" />
+            <arg path="${project.basedir}/src" />
+        </exec>
+    </target>
+        
+    <target name="phpmd" description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
+        <exec executable="${project.basedir}/vendor/bin/phpmd" logoutput="true">
+            <arg path="${project.basedir}/src" />
+            <arg value="text" />
+            <arg value="codesize,unusedcode,naming" />            
+        </exec>
+    </target>    
+	
+    <target name="phpmd-ci" description="Perform project mess detection using PHPMD creating a log file for the continuous integration server">
+        <exec executable="${project.basedir}/vendor/bin/phpmd" logoutput="true">
+            <arg path="${project.basedir}/src" />
+            <arg value="xml" />
+            <arg value="${project.basedir}/phpmd.xml" />
+            <arg value="--reportfile" />
+            <arg value="${project.basedir}/build/logs/pmd.xml" />
+        </exec>
+    </target>
+    
+    <target name="phpdoc">
+        <exec executable="${project.basedir}/vendor/bin/phpdoc" logoutput="true">
+            <arg value="-d" />
+            <arg value="${project.basedir}/src" />
+            <arg value="-t" />
+            <arg value="${project.basedir}/build/phpdox" />
+        </exec>
+    </target>
+    
+	<target name="tests">
+		<phpunit codecoverage="false" haltonfailure="true" printsummary="true" bootstrap="${project.basedir}/tests/bootstrap.php">
       		<batchtest>
-        		<fileset dir="tests">
+        		<fileset dir="${project.basedir}/tests">
           			<include name="*Test.php"/>
         		</fileset>
       		</batchtest>
-    	</phpunit>
+    	</phpunit>	
 	</target>
 	
-	<target name="build" depends="prepare">
-	</target>
+	
+	<target name="build" depends="prepare, lint, tests, phploc, phpcodesniffer, phpcpd, phpmd-ci, phpdoc" />
 	
 </project>
